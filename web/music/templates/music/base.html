@@ -1,0 +1,147 @@
+<!-- File: base.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{% block title %}Spotify - Web Player: Music for everyone{% endblock %}</title>
+    <meta name="description" content="Spotify clone made using html,css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="{% static 'music/css/styles.css' %}" />
+    <link rel="icon" type="image/x-icon" href="{% static 'music/assets/logo.png' %}" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
+    {% block extra_head %}
+    <!-- Child templates can add additional head content here -->
+    {% endblock %}
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar content -->
+        <div class="sidebar">
+            <div class="top-icons">
+                <div class="link-flex">
+                    <img src="{% static 'music/assets/home.png' %}" alt="Home" class="icon-black" />
+                    <a style="font-size:16px; font-weight:bold" href="{% url 'index' %}">Home</a>
+                </div>
+                <div class="link-flex">
+                    <img src="{% static 'music/assets/search.png' %}" alt="Search" class="icon-black" />
+                    <a style="font-size:16px; font-weight:bold" href="">Search</a>
+                </div>
+            </div>
+            <div class="library">
+                <div class="playlists">
+                    <!-- Display playlists -->
+                    <div class="flex-top">
+                        <h3>Your Playlists</h3>
+                        <a href="{% url 'create_playlist' %}" class="chip">Create Playlist</a> <!-- Moved next to 'Your Playlists' -->
+                    </div>
+                    <ul>
+                        {% for playlist in playlists %}
+                            {% if playlist.name != "Favorites" %}  <!-- Exclude Favorites playlist -->
+                                <li>
+                                    <a style="font-size:16px; font-weight: bold" href="{% url 'playlist_detail' playlist.pk %}">{{ playlist.name }}</a>
+                                </li>
+                            {% endif %}
+                        {% empty %}
+                            <li>No playlists available.</li>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Favorites Playlist -->
+                    <a style="font-size:16px; font-weight: bold" href="{% url 'favorites_playlist' %}">Favorites</a>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="navbar">
+                <div class="link-flex">
+                    <img src="{% static 'music/assets/back_navigation.png' %}" alt="Back" id="back-btn" class="icon-black" style="cursor: pointer;" />
+                    <img src="{% static 'music/assets/forward_navigation.png' %}" alt="Forward" id="forward-btn" class="icon-black" style="cursor: pointer;" />
+                </div>
+                <div class="link-flex" style="gap: 0; column-gap: 0.5rem">
+                    {% if user.is_authenticated %}
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="chip">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="chip">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% block content %}
+
+            {% endblock %}
+        </div>
+
+        <!-- Player -->
+        <div class="player">
+            <div class="volume-controls"></div>
+            <div class="player-center">
+                <div class="player-controls">
+                    <img src="{% static 'music/assets/shuffle.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Shuffle" class="icon-black" />
+                    <img src="{% static 'music/assets/previous_musicbar.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Previous" class="icon-black" />
+                    <img src="{% static 'music/assets/play_musicbar.png' %}" style="height: 2rem; margin-right: 1rem" alt="Play" class="icon-black" />
+                    <img src="{% static 'music/assets/next_musicbar.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Next" class="icon-black" />
+                    <img src="{% static 'music/assets/loop.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Loop" class="icon-black" />
+                </div>
+<!--                <div class="player-timeline">-->
+<!--                    <span class="current-time">0:00</span>-->
+<!--                    <input type="range" class="timeline-slider" min="0" max="100" step="1" value="0" />-->
+<!--                    <span class="total-time">0:00</span>-->
+<!--                </div>-->
+            </div>
+
+            <!-- Add Audio Element -->
+            <audio id="audio-player" controls style="width: 75%; margin-top: 10px;">
+                <source id="audio-source" src="" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+
+            <div class="volume-controls">
+                <img src="{% static 'music/assets/device.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Volume" class="icon-black" />
+                <img src="{% static 'music/assets/playlist.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Settings" class="icon-black" />
+                <img src="{% static 'music/assets/music.png' %}" style="height: 1rem; margin-right: 1rem; opacity: 0.8" alt="Fullscreen" class="icon-black" />
+                <input type="range" class="volume-slider" min="0" max="100" step="1" value="50" />
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}
+     <!-- Child templates can add additional JS here -->
+    <script>
+        // Back button functionality
+        document.getElementById("back-btn").addEventListener("click", function() {
+            window.history.back();
+        });
+
+        // Forward button functionality
+        document.getElementById("forward-btn").addEventListener("click", function() {
+            window.history.forward();
+        });
+
+        // Function to play the selected song in the player
+        function playSong(songUrl) {
+            var audioPlayer = document.getElementById('audio-player');
+            var audioSource = document.getElementById('audio-source');
+            audioSource.src = songUrl;
+            audioPlayer.load();  // Load the new audio file
+            audioPlayer.play();  // Play the audio
+        }
+    </script>
+    {% endblock %}
+
+</body>
+</html>

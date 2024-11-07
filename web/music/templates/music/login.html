@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'music/css/style_login.css' %}"> <!-- Link to your CSS file -->
+</head>
+<body>
+    <div class="wrapper">
+        <div class="title">Login Form</div>
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Display non-field errors -->
+            {% if form.non_field_errors %}
+                <div class="error-message">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Username Field -->
+            <div class="field">
+                {{ form.username.errors }} <!-- Display username errors -->
+                {{ form.username }}
+                <label>Username</label>
+            </div>
+
+            <!-- Password Field -->
+            <div class="field">
+                {{ form.password.errors }} <!-- Display password errors -->
+                {{ form.password }}
+                <label>Password</label>
+            </div>
+
+            <!-- Submit button -->
+            <div class="field">
+                <button type="submit" style="width: 100%; height: 50px;
+                background: linear-gradient(-135deg, #5BA8A0, #CBE5AE);
+                color: white; border: none; border-radius: 25px;
+                cursor: pointer;">Login</button>
+            </div>
+
+            <div class="signup-link">
+                Not a member? <a href="{% url 'signup' %}">Signup now</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

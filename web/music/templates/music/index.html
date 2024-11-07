@@ -1,0 +1,70 @@
+{% extends 'music/base.html' %}
+
+{% block content %}
+
+    <!-- Greeting for authenticated users -->
+    {% if user.is_authenticated %}
+        <h1>Hello, {{ user.username }}!</h1>
+    {% else %}
+        <h1>You are not logged in.</h1>
+    {% endif %}
+
+    <!-- Albums grouped by genre -->
+    <h1>Albums</h1>
+    {% if albums_by_genre %}
+        {% for genre, albums in albums_by_genre.items %}
+            <h2>{{ genre }}</h2>
+            <div class="cards-container">
+                {% for album in albums %}
+                    <a href="{% url 'album_detail' album.pk %}" class="card">
+                        {% if album.album_cover %}
+                            <img src="{{ album.album_cover.url }}" class="card-img" alt="{{ album.album_title }} cover" />
+                        {% endif %}
+                        <p class="card-name">{{ album.album_title }}</p>
+                        <p class="card-description">By {{ album.artist.name }}</p>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No albums available.</p>
+    {% endif %}
+
+    <!-- Display success or error messages -->
+    {% if messages %}
+        <ul class="message-list">
+            {% for message in messages %}
+                <li class="{% if message.tags %}{{ message.tags }}{% endif %}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <!-- Related Songs section -->
+    <h2>Related Songs</h2>
+    {% if request.session.related_songs %}
+        <table>
+            <thead >
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Genre</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for song in request.session.related_songs %}
+                <tr>
+                    <td>{{ song.song_title }}</td>
+                    <td>{{ song.artist }}</td>
+                    <td>{{ song.album }}</td>
+                    <td>{{ song.genre }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+
+        </table>
+    {% else %}
+        <p>No related songs available.</p>
+    {% endif %}
+
+{% endblock %}

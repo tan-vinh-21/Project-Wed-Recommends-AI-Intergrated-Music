@@ -1,0 +1,47 @@
+<!-- File: favorites.html -->
+{% extends 'music/base.html' %}
+
+{% block title %}
+    {{ user.username }}'s Favorites Playlist
+{% endblock %}
+
+{% block content %}
+    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        <h1>{{ user.username }}'s Favorites Playlist</h1>
+    </div>
+
+    <h3>Songs:</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Duration</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for song in playlist.songs.all %}
+                <tr>
+                    <td>{{ song.song_title }}</td>
+                    <td>{{ song.artist }}</td>
+                    <td>{{ song.album }}</td>
+                    <td>{{ song.duration }}</td>
+                    <td>
+                        <!-- Form to remove the song from Favorites -->
+                        <form method="POST" action="{% url 'remove_from_favorites' song.id %}">
+                            {% csrf_token %}
+                            <button type="submit">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5" style="padding: 8px; text-align: center;">No songs have been added to your Favorites yet.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

@@ -1,0 +1,24 @@
+<!-- File: lyrics.html -->
+{% extends 'music/base.html' %}
+
+{% block title %}
+    Lyrics for {{ song.song_title }}
+{% endblock %}
+
+{% block content %}
+    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+        {% if song.album.album_cover %}
+            <img src="{{ song.album.album_cover.url }}" alt="{{ song.album.album_title }} cover" style="width: 200px; height: auto; margin-right: 20px;" />
+        {% endif %}
+        <div>
+            <h1>{{ song.song_title }}</h1>
+            <h4>By {{ song.artist.name }}</h4>
+            <h4>On {{ song.album.album_title }}</h4>
+        </div>
+    </div>
+
+    <div style="white-space: pre-wrap; font-family: Arial, sans-serif; line-height: 1.5;">
+        {{ song.lyrics|linebreaks }}
+    </div>
+
+{% endblock %}

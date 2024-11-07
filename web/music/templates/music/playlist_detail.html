@@ -1,0 +1,68 @@
+<!-- File: playlist_detail.html -->
+{% extends 'music/base.html' %}
+
+{% block title %}
+    {{ playlist.name }} - Playlist Detail
+{% endblock %}
+
+{% block content %}
+    <h1>{{ playlist.name }}</h1>
+    <p>Created At: {{ playlist.created_at|date:"F d, Y" }}</p>  <!-- Only displays the date -->
+
+    <table>
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Artist</th>
+                <th>Album</th>
+                <th>Duration</th>
+                <th>Like</th>
+                <th>Remove</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for song in playlist.songs.all %}
+            <tr>
+                <td>
+                    {% if song.mp3_file %}
+                        <a href="#" onclick="playSong('{{ song.mp3_file.url }}'); return false;">
+                            {{ song.song_title }}
+                        </a>
+                    {% else %}
+                        {{ song.song_title }}
+                    {% endif %}
+                </td>
+
+                <td>{{ song.artist }}</td>
+                <td>{{ song.album }}</td>
+                <td>{{ song.duration }}</td>
+                <td>
+                    <!-- Like button -->
+                    <form method="POST" action="{% url 'add_to_favorites' song.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Like</button>
+                    </form>
+                </td>
+                <td>
+                    <!-- Remove button -->
+                    <form method="POST" action="{% url 'remove_from_playlist' playlist.id song.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Remove</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="6" style="text-align: center;">No songs available in this playlist.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+
+    </table>
+
+    <!-- Delete Playlist Button -->
+    <form method="POST" action="{% url 'delete_playlist' playlist.pk %}" style="margin-top: 20px;">
+        {% csrf_token %}
+        <button type="submit">Delete Playlist</button>
+    </form>
+{% endblock %}

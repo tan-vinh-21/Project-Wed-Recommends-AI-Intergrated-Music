@@ -1,0 +1,65 @@
+<!-- File: create_playlist.html -->
+{% extends 'music/base.html' %}
+
+{% block title %}
+    Create Playlist
+{% endblock %}
+
+{% block content %}
+    <h1>Create a New Playlist</h1>
+
+    <form method="POST" action="{% url 'create_playlist' %}">
+        {% csrf_token %}
+        <label for="name">Playlist Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <!-- Move the submit button to the top -->
+        <button type="submit" style="margin-top: 10px;">Create Playlist</button>
+
+        <h3>Select Songs:</h3>
+        <!-- Search field for filtering songs by title, artist, and album -->
+        <input type="text" id="songSearch" placeholder="Search by song title, artist, or album..." onkeyup="filterSongs()">
+
+        <table style="margin-top: 10px;">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>Album</th>
+                    <th>Select</th>
+                </tr>
+            </thead>
+            <tbody id="song-list">
+                {% for song in songs_with_details %}
+                    <tr class="song-item">
+                        <td>{{ song.song_title }}</td>
+                        <td>{{ song.artist }}</td>
+                        <td>{{ song.album }}</td>
+                        <td><input type="checkbox" name="songs" value="{{ song.song.id }}"></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </form>
+
+    <script>
+        function filterSongs() {
+            const searchInput = document.getElementById("songSearch").value.toLowerCase();
+            const songRows = document.querySelectorAll("#song-list .song-item");
+
+            songRows.forEach(function (songRow) {
+                const songTitle = songRow.querySelector("td:nth-child(1)").textContent.toLowerCase();
+                const songArtist = songRow.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                const songAlbum = songRow.querySelector("td:nth-child(3)").textContent.toLowerCase();
+
+                // Check if any of the fields contain the search input
+                if (songTitle.includes(searchInput) || songArtist.includes(searchInput) || songAlbum.includes(searchInput)) {
+                    songRow.style.display = "table-row";  // Show the song if it matches the search
+                } else {
+                    songRow.style.display = "none";       // Hide the song if it doesn't match
+                }
+            });
+        }
+    </script>
+{% endblock %}
